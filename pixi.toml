@@ -1,0 +1,23 @@
+[workspace]
+name = "node_deploy"
+channels = ["https://fast.prefix.dev/conda-forge", "https://prefix.dev/robostack-jazzy"]
+platforms = ["linux-64"]
+
+[activation]
+scripts = ["scripts/ros_env.sh"]
+
+[dependencies]
+python = "3.12.*"
+ros-jazzy-ros-base = "*"
+ros-jazzy-ros2cli-common-extensions = "*"
+ros-jazzy-rmw-cyclonedds-cpp = "*"
+ros-jazzy-ros2-control = "*"
+ros-jazzy-ros2-controllers = "*"
+ros-jazzy-tf2-ros-py = "*"
+
+[pypi-dependencies]
+crisp-python = ">=3.6.0,<4"
+torch = { version = ">=2.6", index = "https://download.pytorch.org/whl/cpu" }
+scipy = "*"
+matplotlib = "*"
+pyyaml = "*"

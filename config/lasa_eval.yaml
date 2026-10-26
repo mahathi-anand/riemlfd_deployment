@@ -1,0 +1,109 @@
+# Settings for eval_lasa.py. The model is picked on the command line (--shape, --beta_scale, --suffix).
+# `control_loop` applies to every shape; every other setting is in the shape's own section, and only shapes
+# with a section can be run. Every key is required. Relative paths are resolved from node_deploy/.
+
+# --- CONTROL LOOP (all shapes) ---
+control_loop:
+  rate: 20.0                  # control loop rate [Hz]
+  lookahead: 0.02             # NODE time advanced per tick (shrunk when the step hits max_step)
+  substeps: 4                 # RK4 steps inside the look-ahead
+  timeout: 120.0              # max run time [s]
+
+# --- SHAPE SPECIFIC SETTINGS ---
+N:
+  # ---- start and goal (LASA frame)
+  start_demo: 1               # start at this demo's first pose (0-6)
+  start_uv: null              # or [x, y]: start here instead, orientation from the closest demo point
+  goal_demo: 1                # use this demo's final pose as the goal (0-6)
+  # ---- LASA frame -> robot base frame
+  plane: xy                   # robot base plane the LASA x, y are drawn in: yz | xy | xz
+  center: [0.45, 0.0, 0.4]    # robot position of LASA (0, 0) [m]
+  scale: 0.12                 # metres per LASA unit (the shapes span [-1, 1])
+  no_orientation: false       # true: keep the homed orientation, follow the decoded position only
+  # ---- stop
+  goal_tol: 0.005             # stop when within this distance of the decoded goal [m]
+  # ---- safety
+  max_step: 0.0025             # max target change per tick [m] (0.005 @ 20 Hz = 0.1 m/s)
+  max_rot: 1.0                # max target rotation change per tick [deg]
+  resync: 0.05                # re-encode the measured pose when it is this far from the commanded one [m]
+  off_data_margin: 3.0        # off-data if log det G exceeds its training maximum by this much (natural log)
+  off_data_hold: true         # true: return to the last on-data target while off-data; false: only warn
+  workspace_margin: 0.2       # targets are clipped to the shapes' box [-1, 1] plus this (LASA units)
+  # ---- other
+  params: null                # optional YAML of cartesian_impedance_controller parameters to load
+  output: null                # plot / samples path without extension (null: results/lasa_<shape>_beta_<b>)
+  dry_run: false
+                 # true: no robot, integrate the loop on the decoded pose only
+
+Angle:
+  # ---- start and goal (LASA frame)
+  start_demo: 0
+  start_uv: null
+  goal_demo: 0
+  # ---- LASA frame -> robot base frame
+  plane: xy
+  center: [0.45, 0.0, 0.4]
+  scale: 0.12
+  no_orientation: false
+  # ---- stop
+  goal_tol: 0.005
+  # ---- safety
+  max_step: 0.005
+  max_rot: 2.0
+  resync: 0.05
+  off_data_margin: 3.0
+  off_data_hold: true
+  workspace_margin: 0.2
+  # ---- other
+  params: null
+  output: null
+  dry_run: false
+
+Sine:
+  # ---- start and goal (LASA frame)
+  start_demo: 0
+  start_uv: null
+  goal_demo: 0
+  # ---- LASA frame -> robot base frame
+  plane: xy
+  center: [0.45, 0.0, 0.4]
+  scale: 0.12
+  no_orientation: false
+  # ---- stop
+  goal_tol: 0.005
+  # ---- safety
+  max_step: 0.005
+  max_rot: 2.0
+  resync: 0.05
+  off_data_margin: 5.0        # beta 5: the latent path briefly reaches log det G 4.4 above the training max
+                              # while the decoded path stays on the demos (beta 10 stalls at a false equilibrium)
+  off_data_hold: true
+  workspace_margin: 0.2
+  # ---- other
+  params: null
+  output: null
+  dry_run: false
+
+Leaf_1:
+  # ---- start and goal (LASA frame)
+  start_demo: 0
+  start_uv: null
+  goal_demo: 0
+  # ---- LASA frame -> robot base frame
+  plane: xy
+  center: [0.45, 0.0, 0.4]
+  scale: 0.12
+  no_orientation: false
+  # ---- stop
+  goal_tol: 0.012             # the path settles ~10 mm from the decoded goal, so 5 mm is never reached
+  # ---- safety
+  max_step: 0.0025
+  max_rot: 1.0
+  resync: 0.05
+  off_data_margin: 3.0
+  off_data_hold: true
+  workspace_margin: 0.2
+  # ---- other
+  params: null
+  output: null
+  dry_run: false
